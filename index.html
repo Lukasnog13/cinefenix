@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="pt-br" >
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CineFenix - Viva a magia da tela</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+    body {
+      background: #000;
+      color: #eee;
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      scroll-behavior: smooth;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: #111;
+      border-bottom: 3px solid #f5c518;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      z-index: 10000;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+      user-select: none;
+    }
+    header.scrolled {
+      background: #000;
+      box-shadow: 0 4px 15px #f5c518cc;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo svg {
+      width: 40px;
+      height: 40px;
+      fill: #f5c518;
+      filter: drop-shadow(0 0 3px #f5c518aa);
+      transition: transform 0.3s ease;
+    }
+    .logo svg:hover {
+      transform: rotate(15deg) scale(1.1);
+    }
+    .logo-text {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #f5c518;
+      letter-spacing: 1.5px;
+      user-select: none;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      position: relative;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 30px;
+    }
+    nav li {
+      position: relative;
+    }
+    nav a {
+      font-weight: 600;
+      color: #fff;
+      padding: 6px 0;
+      transition: color 0.3s ease;
+      user-select: none;
+    }
+    nav a:hover, nav a:focus {
+      color: #f5c518;
+    }
+
+    /* Dropdown */
+    .dropdown > a::after {
+      content: "▼";
+      font-size: 0.6rem;
+      margin-left: 5px;
+      color: #f5c518;
+      vertical-align: middle;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: 28px;
+      left: 0;
+      background: #111;
+      border: 1px solid #f5c518;
+      border-radius: 6px;
+      min-width: 150px;
+      box-shadow: 0 0 15px #f5c518aa;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 2000;
+    }
+    .dropdown-menu li {
+      padding: 10px 15px;
+      white-space: nowrap;
+      border-bottom: 1px solid #333;
+    }
+    .dropdown-menu li:last-child {
+      border-bottom: none;
+    }
+    .dropdown-menu li a {
+      color: #ddd;
+      font-weight: 500;
+      font-size: 0.95rem;
+    }
+    .dropdown:hover .dropdown-menu,
+    .dropdown:focus-within .dropdown-menu {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    /* Hamburger menu mobile */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .hamburger div {
+      width: 28px;
+      height: 3px;
+      background: #f5c518;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+    .hamburger.active div:nth-child(1) {
+      transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger.active div:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.active div:nth-child(3) {
+      transform: translateY(-8px) rotate(-45deg);
+    }
+
+    /* Mobile nav */
+    @media (max-width: 850px) {
+      nav ul {
+        position: fixed;
+        top: 64px;
+        right: 0;
+        background: #111;
+        flex-direction: column;
+        width: 220px;
+        height: calc(100vh - 64px);
+        padding-top: 30px;
+        gap: 20px;
+        transform: translateX(100%);
+        transition: transform 0.35s ease;
+        box-shadow: -3px 0 15px #f5c518aa;
+        z-index: 1500;
+      }
+      nav ul.active {
+        transform: translateX(0);
+      }
+      nav li {
+        padding-left: 30px;
+      }
+      .dropdown-menu {
+        position: static;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        padding-left: 20px;
+        margin-top: 5px;
+      }
+      .dropdown > a::after {
+        content: "▼";
+        margin-left: 8px;
+      }
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    main {
+      padding: 110px 20px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+    }
+    h2.section-title {
+      color: #f5c518;
+      font-size: 2.5rem;
+      text-align: center;
+      margin-bottom: 50px;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+    }
+    .filmes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .filme-card {
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #f5c518aa;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+    }
+    .filme-card:hover {
+      transform: translateY(-12px);
+      box-shadow: 0 15px 30px #f5c518dd;
+    }
+    .filme-poster {
+      width: 100%;
+      height: 420px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+    .filme-card:hover .filme-poster {
+      transform: scale(1.05);
+    }
+    .filme-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .filme-title {
+      font-size: 1.5rem;
+      color: #f5c518;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+    .filme-desc {
+      flex-grow: 1;
+      font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .btn-comprar {
+      background: #f5c518;
+      color: #000;
+      border: none;
+      padding: 14px;
+      font-weight: 700;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-align: center;
+      user-select: none;
+    }
+    .btn-comprar:hover {
+      background: #ddb717;
+    }
+
+    /* Modal */
+    .modal-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.9);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 3000;
+      padding: 20px;
+    }
+    .modal-bg.active {
+      display: flex;
+    }
+    .modal {
+      background: #111;
+      border-radius: 16px;
+      max-width: 480px;
+      width: 100%;
+      padding: 30px 35px;
+      box-shadow: 0 0 40px #f5c518cc;
+      position: relative;
+      font-size: 1rem;
+      user-select: none;
+    }
+    .modal h3 {
+      color: #f5c518;
+      margin-bottom: 25px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      text-align: center;
+    }
+    .modal label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+      font-size: 1.05rem;
+      color: #eee;
+    }
+    .modal select,
+    .modal input[type="number"] {
+      width: 100%;
+      padding: 14px 16px;
+      margin-bottom: 25px;
+      border-radius: 10px;
+      border: none;
+      font-size: 1.1rem;
+      background: #222;
+      color: #eee;
+      font-weight: 500;
+      outline-offset: 2px;
+      outline-color: #f5c518;
+    }
+    .modal button {
+      background: #f5c518;
+      color: #000;
+      border: none;
+      padding: 16px;
+      font-weight: 700;
+      border-radius: 14px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1.1rem;
+      transition: background-color 0.3s ease;
+      user-select: none;
+    }
+    .modal button:hover {
+      background: #ddb717;
+    }
+    .modal .close-btn {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      font-size: 1.8rem;
+      color: #f5c518;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.3s ease;
+    }
+    .modal .close-btn:hover {
+      color: #ddb717;
+    }
+
+    /* Sobre e contato */
+    section#sobre, section#contato, section#noticias {
+      background: #111;
+      border-radius: 16px;
+      padding: 35px 30px;
+      box-shadow: 0 0 40px #f5c518aa;
+      max-width: 720px;
+      margin: 70px auto 0 auto;
+    }
+    section#sobre p, section#noticias p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: #ddd;
+      margin-bottom: 20px;
+      user-select: text;
+    }
+    section#contato form {
+      display: flex;
+      flex-direction: column;
+    }
+    section#contato label {
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    section#contato input, section#contato textarea {
+      background: #222;
+      border: none;
+      border-radius: 12px;
+      color: #eee;
+      padding: 15px 18px;
+      margin-bottom: 25px;
+      font-size: 1.1rem;
+      font-weight: 400;
+      resize: vertical;
+      outline-offset: 2px;
+      outline-color: #f5c518;
+      transition: background-color 0.3s ease;
+    }
+    section#contato input:focus, section#contato textarea:focus {
+      background: #333;
+    }
+    section#contato textarea {
+      min-height: 120px;
+    }
+    section#contato button {
+      background: #f5c518;
+      color: #000;
+      border: none;
+      padding: 18px;
+      font-weight: 700;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      user-select: none;
+      font-size: 1.2rem;
+    }
+    section#contato button:hover {
+      background: #ddb717;
+    }
+
+    /* Noticias list */
+    #noticias ul {
+      list-style: none;
+      margin-top: 15px;
+      padding-left: 20px;
+    }
+    #noticias ul li {
+      margin-bottom: 15px;
+      font-size: 1.05rem;
+      color: #ccc;
+      cursor: default;
+      user-select: text;
+    }
+
+    footer {
+      background: #111;
+      color: #aaa;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 0.9rem;
+      border-top: 1px solid #222;
+      margin-top: 60px;
+      user-select: none;
+      letter-spacing: 0.5px;
+    }
+    footer a {
+      color: #f5c518;
+      font-weight: 600;
+      margin-left: 10px;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    footer a:hover {
+      color: #ddb717;
+    }
+
+    /* Responsivo */
+    @media (max-width: 600px) {
+      header {
+        padding: 15px 20px;
+      }
+      main {
+        padding: 120px 15px 40px;
+      }
+      .filme-poster {
+        height: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <<div class="logo" tabindex="0" aria-label="Logo CineFenix">
+  <img src="logo.jpg" alt="Logo CineFenix" style="height: 60px;" />
+</div>
+    <nav>
+      <ul id="nav-list">
+        <li><a href="#home" tabindex="0">Home</a></li>
+        <li class="dropdown" tabindex="0" aria-haspopup="true" aria-expanded="false">
+          <a href="#programacao">Programação</a>
+          <ul class="dropdown-menu" aria-label="submenu programacao">
+            <li><a href="#filmes">Filmes em Cartaz</a></li>
+            <li><a href="#lancamentos">Lançamentos</a></li>
+            <li><a href="#sessao-especial">Sessão Especial</a></li>
+          </ul>
+        </li>
+        <li><a href="#comprar">Comprar Ingressos</a></li>
+        <li><a href="#noticias">Notícias</a></li>
+        <li><a href="#sobre">Sobre</a></li>
+        <li><a href="#contato">Contato</a></li>
+      </ul>
+      <div class="hamburger" id="hamburger" aria-label="Abrir menu" tabindex="0" role="button" aria-expanded="false" aria-controls="nav-list">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!--<section id="home" tabindex="0" aria-label="Seção Home">
+      <h2 class="section-title">Bem-vindo ao CineFenix</h2>
+      <p style="max-width:600px; margin: 0 auto 40px; font-size:1.2rem; color:#ddd; text-align:center;">
+        O CineFenix é o único cinema da cidade de Fênix-PR, criado especialmente para os verdadeiros amantes da sétima arte. Com uma sala única, moderna e intimista, o espaço oferece som e projeção de qualidade, garantindo uma experiência cinematográfica envolvente e memorável.
+
+Nosso objetivo é celebrar o cinema em todas as suas formas — dos grandes lançamentos aos clássicos atemporais. Aqui, o público encontra uma programação diversificada, pensada para agradar todos os gostos e idades.
+
+Além disso, o CineFenix se destaca por seus valores acessíveis e por promover sessões temáticas especiais, que transformam cada visita em um momento único.
+
+Venha viver a magia da tela com a gente!
+      </p>
+    </section>-->
+
+    <section id="programacao" tabindex="0" aria-label="Seção programação">
+      <h2 class="section-title">Programação em Cartaz</h2>
+      <div class="filmes-grid" id="filmes-lista">
+        <!-- Cards de filmes gerados via JS -->
+      </div>
+    </section>
+
+    <section id="lancamentos" tabindex="0" aria-label="Seção lançamentos" style="max-width: 700px; margin: 70px auto 0;">
+      <h2 class="section-title">Lançamentos</h2>
+      <p>
+        Confira os filmes mais recentes chegando ao CineFenix. Atualizamos toda semana para trazer sempre novidades fresquinhas.
+      </p>
+      <ul style="color:#ccc; margin-top: 20px; list-style:none; padding-left:0;">
+        <li>• Premonição 6 – O destino está de volta com mais suspense e mortes inesperadas.</li>
+        <li>• Como Treinar Seu Dragão – A aventura e amizade de Soluço e Banguela em nova jornada.</li>
+        <li>• Lilo & Stitch – Uma história emocionante sobre família, amizade e um alienígena atrapalhado.</li>
+        <li>• Extermínio: A Evolução – A raça humana luta pela sobrevivência num mundo devastado.</li>
+      </ul>
+    </section>
+
+    <section id="sessao-especial" tabindex="0" aria-label="Seção sessão especial" style="max-width: 700px; margin: 70px auto 0;">
+      <h2 class="section-title">Sessão Especial</h2>
+      <p>
+        Toda sexta-feira, uma sessão temática com filmes cult, clássicos e homenagens especiais para você celebrar o cinema de uma forma diferente.
+      </p>
+    </section>
+
+    <section id="comprar" tabindex="0" aria-label="Seção comprar ingressos" style="max-width: 700px; margin: 70px auto 0;">
+      <h2 class="section-title">Comprar Ingressos</h2>
+      <p>
+        Selecione seu filme favorito na programação acima e clique em "Comprar Ingresso" para garantir sua vaga.
+      </p>
+      <p style="color:#ccc; font-style: italic; margin-top: 10px;">* Sistema de compra online em desenvolvimento.</p>
+    </section>
+
+    <section id="noticias" tabindex="0" aria-label="Seção notícias">
+      <h2 class="section-title">Notícias</h2>
+      <p>Fique por dentro das novidades e eventos do CineFenix:</p>
+      <ul>
+        <li>Festival de Curtas acontecerá em julho - Inscrições abertas.</li>
+        <li>Promoção especial para estudantes toda quarta-feira.</li>
+        <li>Evento "Noite do Terror" em Outubro com clássicos do gênero.</li>
+      </ul>
+    </section>
+
+    <section id="sobre" tabindex="0" aria-label="Seção sobre">
+      <h2>Sobre o CineFenix</h2>
+      <p>
+        O CineFenix é o único cinema da cidade de Fênix-PR, criado especialmente para os verdadeiros amantes da sétima arte. Com uma sala única, moderna e intimista, o espaço oferece som e projeção de qualidade, garantindo uma experiência cinematográfica envolvente e memorável.
+
+Nosso objetivo é celebrar o cinema em todas as suas formas — dos grandes lançamentos aos clássicos atemporais. Aqui, o público encontra uma programação diversificada, pensada para agradar todos os gostos e idades.
+
+Além disso, o CineFenix se destaca por seus valores acessíveis e por promover sessões temáticas especiais, que transformam cada visita em um momento único.
+
+Venha viver a magia da tela com a gente!
+      </p>
+    </section>
+
+    <section id="contato" tabindex="0" aria-label="Seção contato">
+      <h2>Fale conosco</h2>
+      <form id="contato-form">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" placeholder="Seu nome" required autocomplete="name" />
+
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" placeholder="Seu e-mail" required autocomplete="email" />
+
+        <label for="mensagem">Mensagem</label>
+        <textarea id="mensagem" name="mensagem" placeholder="Sua mensagem" required></textarea>
+
+        <button type="submit" aria-label="Enviar mensagem">Enviar</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    &copy; 2025 CineFenix - Viva a magia da tela | Fênix - PR  
+    <br />
+    Siga-nos nas redes: 
+    <a href="#" aria-label="Facebook CineFenix">Facebook</a> | 
+    <a href="#" aria-label="Instagram CineFenix">Instagram</a> | 
+    <a href="#" aria-label="Twitter CineFenix">Twitter</a>
+  </footer>
+
+  <!-- Modal Compra de Ingresso -->
+  <div class="modal-bg" id="modalCompra" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
+    <div class="modal">
+      <span class="close-btn" id="modalClose" role="button" aria-label="Fechar modal">&times;</span>
+      <h3 id="modalTitle">Comprar Ingresso</h3>
+      <form id="formCompra">
+        <label for="sessao">Escolha a sessão:</label>
+        <select id="sessao" name="sessao" required aria-required="true">
+          <option value="" disabled selected>Selecione</option>
+          <option value="14:00">14:00</option>
+          <option value="17:00">17:00</option>
+          <option value="20:00">20:00</option>
+        </select>
+
+        <label for="quantidade">Quantidade de ingressos:</label>
+        <input type="number" id="quantidade" name="quantidade" min="1" max="10" value="1" required aria-required="true" />
+
+        <button type="submit" aria-label="Finalizar compra">Finalizar compra</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Dados dos filmes
+    const filmes = [
+      {
+        id: 1,
+        titulo: "Premonição 6 - Laços de Sangue",
+        descricao: "uma estudante universitária atormentada por pesadelos recorrentes onde sua família morre. Ela retorna à sua cidade natal para encontrar sua avó, Iris, a única capaz de quebrar o ciclo de morte, que salvou outras pessoas no passado.",
+        poster: "premonicao.jpg"
+      },
+      {
+        id: 2,
+        titulo: "Exterminio 3 - A Evolução",
+        descricao: "28 anos após a infecção pelo vírus da Raiva. Um grupo de sobreviventes vive isolado em uma ilha, mas decide sair em uma missão ao continente, onde encontra horrores e mutações que afetaram não apenas os infectados, mas também outros sobreviventes.",
+        poster: "exterminio.jpg"
+      },
+      {
+        id: 3,
+        titulo: "Lilo % Stitch",
+        descricao: "Lilo & Stitch conta a história de Lilo, uma menina havaiana solitária, e Stitch, um alienígena geneticamente modificado que se passa por um cachorro. Juntos, eles formam uma improvável amizade, enquanto Stitch é perseguido por agentes galácticos.",
+        poster: "lilo.jpeg"
+      },
+      {
+        id: 4,
+        titulo: "Como Treinar seu Dragão",
+        descricao: "Conta a história de Soluço, um jovem viking que não se encaixa nas tradições de sua tribo, que é caçar dragões. Ele quebra essa tradição quando faz amizade com um dragão ferido chamado Banguela, um Fúria da Noite. Juntos, eles desafiam as expectativas e buscam mostrar que vikings e dragões podem viver em harmonia.",
+        poster: "dragão.jpg"
+      },
+      {
+        id: 5,
+        titulo: "Elio",
+        descricao: "Um menino de 11 anos chamado Elio, que é erroneamente levado ao Comuniverso, uma organização interplanetária, e confundido com o embaixador da Terra. Sem estar preparado para a situação, Elio precisa fazer novas amizades com alienígenas, sobreviver a desafios intergalácticos e descobrir quem ele realmente é.",
+        poster: "elio.jpg"
+      },
+      {
+        id: 6,
+        titulo: "Bailarina",
+        descricao: "Eve, uma jovem que busca vingança contra aqueles que destruíram sua família, usando suas habilidades de combate aprendidas em uma organização de assassinos.",
+        poster: "ballerina.jpg"
+      }
+    ];
+
+    const filmesLista = document.getElementById("filmes-lista");
+
+    filmes.forEach(filme => {
+      const card = document.createElement("div");
+      card.classList.add("filme-card");
+      card.innerHTML = `
+        <img class="filme-poster" src="${filme.poster}" alt="Pôster do filme ${filme.titulo}" />
+        <div class="filme-content">
+          <h3 class="filme-title">${filme.titulo}</h3>
+          <p class="filme-desc">${filme.descricao}</p>
+          <button class="btn-comprar" data-filme-id="${filme.id}" aria-label="Comprar ingresso para ${filme.titulo}">Comprar Ingresso</button>
+        </div>
+      `;
+      filmesLista.appendChild(card);
+    });
+
+    // Modal e compra
+    const modal = document.getElementById("modalCompra");
+    const modalClose = document.getElementById("modalClose");
+    const formCompra = document.getElementById("formCompra");
+    let filmeSelecionadoId = null;
+
+    filmesLista.addEventListener("click", e => {
+      if(e.target.classList.contains("btn-comprar")){
+        filmeSelecionadoId = e.target.getAttribute("data-filme-id");
+        modal.classList.add("active");
+        document.getElementById("sessao").value = "";
+        document.getElementById("quantidade").value = 1;
+        modal.focus();
+      }
+    });
+
+    modalClose.addEventListener("click", () => {
+      modal.classList.remove("active");
+    });
+
+    modal.addEventListener("click", e => {
+      if(e.target === modal){
+        modal.classList.remove("active");
+      }
+    });
+
+    formCompra.addEventListener("submit", e => {
+      e.preventDefault();
+      const sessao = formCompra.sessao.value;
+      const quantidade = formCompra.quantidade.value;
+      const filme = filmes.find(f => f.id == filmeSelecionadoId);
+      if(sessao && quantidade > 0){
+        alert(`Compra realizada!\n\nFilme: ${filme.titulo}\nSessão: ${sessao}\nIngressos: ${quantidade}`);
+        modal.classList.remove("active");
+        formCompra.reset();
+      }
+    });
+
+    // Header efeito scroll
+    window.addEventListener("scroll", () => {
+      const header = document.querySelector("header");
+      if(window.scrollY > 20){
+        header.classList.add("scrolled");
+      } else {
+        header.classList.remove("scrolled");
+      }
+    });
+
+    // Contato form
+    const contatoForm = document.getElementById("contato-form");
+    contatoForm.addEventListener("submit", e => {
+      e.preventDefault();
+      alert("Mensagem enviada! Entraremos em contato em breve.");
+      contatoForm.reset();
+    });
+
+    // Menu mobile toggle
+    const hamburger = document.getElementById("hamburger");
+    const navList = document.getElementById("nav-list");
+
+    hamburger.addEventListener("click", () => {
+      hamburger.classList.toggle("active");
+      navList.classList.toggle("active");
+      const expanded = hamburger.getAttribute("aria-expanded") === "true";
+      hamburger.setAttribute("aria-expanded", !expanded);
+    });
+
+    // Accessibility: close menu with ESC key
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape"){
+        if(modal.classList.contains("active")){
+          modal.classList.remove("active");
+        }
+        if(navList.classList.contains("active")){
+          navList.classList.remove("active");
+          hamburger.classList.remove("active");
+          hamburger.setAttribute("aria-expanded", "false");
+        }
+      }
+    });
+  </script>
+</body>
+</html>
