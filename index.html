@@ -513,6 +513,58 @@ Além disso, o CineFenix se destaca por seus valores acessíveis e por promover 
 Venha viver a magia da tela com a gente!
       </p>
     </section>-->
+    <section id="carrossel">
+  <div class="slide-container" style="position: relative; overflow: hidden; border-radius: 12px; box-shadow: 0 0 20px #f5c518aa;">
+    <img src="imagem1.jpg" alt="Imagem 1" class="slide" style="width: 100%; height: 600px; object-fit: cover; display: block;">
+    <img src="imagem2.jpg" alt="Imagem 2" class="slide" style="width: 100%; height: 600px; object-fit: cover; display: none;">
+    <img src="imagem3.jpg" alt="Imagem 3" class="slide" style="width: 100%; height: 600px; object-fit: cover; display: none;">
+
+    <button id="prevBtn" aria-label="Imagem anterior" style="position: absolute; top: 50%; left: 10px; transform: translateY(-50%); background: rgba(245,197,24,0.8); border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px;">&#10094;</button>
+    <button id="nextBtn" aria-label="Próxima imagem" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: rgba(245,197,24,0.8); border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px;">&#10095;</button>
+  </div>
+</section>
+
+<script>
+  // Slider/carrossel
+  const slides = document.querySelectorAll('#carrossel .slide');
+  let current = 0;
+  let interval = setInterval(nextSlide, 5000);
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.style.display = i === index ? 'block' : 'none';
+    });
+    current = index;
+  }
+
+  function nextSlide() {
+    let nextIndex = (current + 1) % slides.length;
+    showSlide(nextIndex);
+  }
+
+  function prevSlide() {
+    let prevIndex = (current - 1 + slides.length) % slides.length;
+    showSlide(prevIndex);
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    nextSlide();
+    resetInterval();
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    prevSlide();
+    resetInterval();
+  });
+
+  function resetInterval() {
+    clearInterval(interval);
+    interval = setInterval(nextSlide, 5000);
+  }
+
+  showSlide(0);
+</script>
+
 
     <section id="programacao" tabindex="0" aria-label="Seção programação">
       <h2 class="section-title">Programação em Cartaz</h2>
